@@ -97,7 +97,13 @@ app.use('/', portalRoutes);
 app.use('/', publicRoutes);
 
 app.use((req, res) => {
-  res.status(404).render('errors/404', { title: 'Pagina no encontrada' });
+  // Fuera de produccion se muestra la peticion tal como llego. Sirve para ver
+  // si el prefijo del BASE_PATH se quito bien y con que ruta se busco.
+  const detail = config.isProd
+    ? null
+    : `${req.method} ${req.originalUrl}  ->  ruta buscada: ${req.url}`;
+  console.warn(`[404] ${req.method} ${req.originalUrl} -> ${req.url}`);
+  res.status(404).render('errors/404', { title: 'Pagina no encontrada', detail });
 });
 
 // eslint-disable-next-line no-unused-vars

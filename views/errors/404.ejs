@@ -6,4 +6,14 @@
   <p class="pet-claim">La direccion que abriste no existe.</p>
 </section>
 
+<% if (typeof detail !== 'undefined' && detail) { %>
+  <section class="card card-tip">
+    <h2>Detalle tecnico</h2>
+    <p class="mono"><%= detail %></p>
+    <p class="muted small">
+      Este bloque solo aparece cuando la aplicacion no esta en modo produccion.
+    </p>
+  </section>
+<% } %>
+
 <%- include('../partials/public-foot') %>

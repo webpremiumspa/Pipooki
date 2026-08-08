@@ -75,6 +75,7 @@ const cases = [
   ['public/inactive', { suspended: true }],
   ['public/tag-free', { code: 'a7f3k9x2', activated: false }],
   ['errors/404', {}],
+  ['errors/404', { detail: 'POST /find/p/abc/activar  ->  ruta buscada: /p/abc/activar' }],
   ['errors/500', { message: 'detalle' }],
   ['public/pet', {
     tag: tagRow, code: 'a7f3k9x2', justActivated: false, ownerFirstName: 'Maria',
