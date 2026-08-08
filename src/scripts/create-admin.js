@@ -1,9 +1,12 @@
 'use strict';
 
 // Crea o actualiza un administrador.
-// Uso: npm run create-admin -- --email tu@correo.cl --password "clave" --name "Nombre"
-
-require('dotenv').config();
+//
+// Igual que setup-db, corre en el terminal y no ve las variables que cPanel
+// inyecta a la aplicacion. Hay que pasarlas en la misma linea:
+//
+//   DB_NAME=usuario_base DB_USER=usuario_x DB_PASSWORD='clave' \
+//     node src/scripts/create-admin.js --email tu@correo.cl --password "clave"
 
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');

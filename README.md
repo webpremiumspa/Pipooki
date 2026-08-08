@@ -116,10 +116,14 @@ le llega el codigo de confirmacion. El panel avisa mientras no este configurado.
 
 ```bash
 npm install
-cp .env.example .env      # completar credenciales
+cp .env.example .env      # solo para desarrollo local
 npm run setup             # crea las tablas y el primer administrador
-npm start
+npm run dev
 ```
+
+Los scripts `dev`, `setup` y `create-admin` cargan el `.env` con la opcion
+nativa `--env-file` de Node. `npm start` no lo hace: es el que usa el servidor,
+donde las variables vienen de cPanel.
 
 `npm run setup` imprime el correo y la clave del administrador. Se muestra una
 sola vez. Para crear o resetear otro despues:
@@ -214,11 +218,23 @@ Guardar, y usar **Run NPM Install**.
 
 ### 5. Variables de entorno
 
-El archivo `.env` ya viene con el dominio de produccion y un `SESSION_SECRET`
-generado. Falta completar `DB_USER`, `DB_PASSWORD`, `DB_NAME` y `SMTP_PASSWORD`.
+En produccion **no se usa ningun archivo `.env`**. Las variables se definen en
+la seccion **Environment variables** de la pantalla de la aplicacion, y despues
+hay que pulsar **SAVE**: con RESTART solo, Passenger vuelve a levantar con la
+configuracion anterior y las variables no llegan al proceso.
 
-Tambien se pueden cargar desde **Environment variables** en la misma pantalla de
-cPanel.
+La lista completa esta en `.env.example`. Las imprescindibles:
+`BASE_PATH`, `PUBLIC_URL`, `SESSION_SECRET`, `DB_NAME`, `DB_USER`,
+`DB_PASSWORD`, `SMTP_PASSWORD`, `ADMIN_NOTIFY_EMAIL`.
+
+Escribelas **sin comillas**: en esta interfaz las comillas quedan como parte del
+valor.
+
+Si falta alguna, el log lo dice al arrancar:
+
+```
+[pipooki-find] FALTAN variables de entorno: DB_NAME, DB_USER ...
+```
 
 Para probar antes en `dev.webpremium.cl/find`, cambiar solo `PUBLIC_URL`.
 Ese valor queda **grabado dentro del QR impreso**: las placas fabricadas
@@ -227,11 +243,16 @@ recien con `PUBLIC_URL=https://pipookis.cl`.
 
 ### 6. Crear las tablas
 
+El terminal **no ve** las variables de cPanel: esas solo se inyectan al proceso
+de Passenger. Hay que pasarle las credenciales en la misma linea:
+
 ```bash
-source /home/usuario/nodevenv/pipooki-find/18/bin/activate
-cd /home/usuario/pipooki-find
-npm run setup
+cd /home/webpremi/repositories/Pipooki
+DB_NAME=usuario_base DB_USER=usuario_x DB_PASSWORD='clave' \
+  node src/scripts/setup-db.js
 ```
+
+Anota el correo y la clave del administrador que imprime: se muestran una sola vez.
 
 ### 7. Reiniciar
 

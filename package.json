@@ -9,13 +9,13 @@
   },
   "scripts": {
     "start": "node app.js",
-    "setup": "node src/scripts/setup-db.js",
-    "create-admin": "node src/scripts/create-admin.js",
+    "dev": "node --env-file=.env app.js",
+    "setup": "node --env-file=.env src/scripts/setup-db.js",
+    "create-admin": "node --env-file=.env src/scripts/create-admin.js",
     "test": "node test/views.js && node test/smoke.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "express-mysql-session": "^3.0.3",

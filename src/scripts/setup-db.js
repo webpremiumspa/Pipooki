@@ -1,10 +1,15 @@
 'use strict';
 
 // Crea las tablas y, si no existe ningun administrador, el primero.
-// Uso:  npm run setup
-//       npm run setup -- --email tu@correo.cl --password "clave" --name "Tu Nombre"
-
-require('dotenv').config();
+//
+// Este script corre desde el terminal, donde NO existen las variables que
+// cPanel inyecta a la aplicacion: esas solo llegan al proceso de Passenger.
+// Hay que pasarle las credenciales en la misma linea:
+//
+//   DB_NAME=usuario_base DB_USER=usuario_x DB_PASSWORD='clave' \
+//     node src/scripts/setup-db.js --email tu@correo.cl --password "clave"
+//
+// En local: npm run setup (usa --env-file con el .env del proyecto).
 
 const fs = require('fs');
 const path = require('path');
