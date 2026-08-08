@@ -21,7 +21,16 @@ function normalizeBasePath(value) {
 }
 
 const rootDir = path.join(__dirname, '..');
-const basePath = normalizeBasePath(process.env.BASE_PATH);
+// El dominio y el subdirectorio son constantes de este despliegue, no secretos.
+// Van con valor por defecto para que la aplicacion quede bien montada aunque
+// el servidor no alcance a inyectar las variables de entorno: sin esto, un
+// BASE_PATH vacio hace que todas las rutas respondan 404 y que los enlaces
+// apunten a la raiz del dominio.
+// El operador ?? respeta BASE_PATH="" para montarla en la raiz en desarrollo.
+const DEFAULT_BASE_PATH = '/find';
+const DEFAULT_PUBLIC_URL = 'https://pipookis.cl';
+
+const basePath = normalizeBasePath(process.env.BASE_PATH ?? DEFAULT_BASE_PATH);
 
 module.exports = {
   rootDir,
@@ -30,7 +39,7 @@ module.exports = {
   port: int(process.env.PORT, 3000),
 
   basePath,
-  publicUrl: (process.env.PUBLIC_URL || 'http://localhost:3000').replace(/\/+$/, ''),
+  publicUrl: (process.env.PUBLIC_URL || DEFAULT_PUBLIC_URL).replace(/\/+$/, ''),
 
   sessionSecret: process.env.SESSION_SECRET || 'pipooki-dev-secret-cambiar',
 
