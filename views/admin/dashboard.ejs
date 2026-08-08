@@ -10,8 +10,10 @@
 <% if (!smtpReady) { %>
   <div class="flash flash-warn">
     El correo saliente (SMTP) no esta configurado. Sin el nadie puede activar una
-    placa, porque no le llega el codigo de confirmacion. Completa las variables
-    SMTP_* en el archivo .env.
+    placa, porque no le llega el codigo de confirmacion. Define las variables
+    SMTP_HOST, SMTP_PORT, SMTP_USER y SMTP_PASSWORD en cPanel, en Environment
+    variables de la aplicacion, y reinicia el proceso: las variables se leen
+    una sola vez al arrancar.
   </div>
 <% } %>
 
