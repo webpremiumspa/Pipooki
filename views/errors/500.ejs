@@ -1,0 +1,14 @@
+<%- include('../partials/public-head') %>
+
+<section class="hero">
+  <div class="hero-badge">&#128062; <%= brand %></div>
+  <h1 class="pet-name">Algo salio mal</h1>
+  <p class="pet-claim">
+    Ocurrio un error al procesar tu solicitud. Intenta de nuevo en unos segundos.
+  </p>
+  <% if (typeof message !== 'undefined' && message) { %>
+    <p class="status"><%= message %></p>
+  <% } %>
+</section>
+
+<%- include('../partials/public-foot') %>

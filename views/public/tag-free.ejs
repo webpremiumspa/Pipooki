@@ -1,0 +1,28 @@
+<%- include('../partials/public-head') %>
+
+<section class="hero">
+  <div class="hero-badge">&#128062; <%= brand %> Find</div>
+  <h1 class="pet-name">Esta placa esta sin activar</h1>
+  <p class="pet-claim">
+    Si acabas de comprarla, actívala ahora: son dos minutos y desde ese momento
+    tu mascota queda identificada.
+  </p>
+</section>
+
+<section class="card card-primary">
+  <h2>Activar la placa</h2>
+  <p>Vas a necesitar el <strong>PIN</strong> que viene en el inserto del empaque.</p>
+  <a class="btn btn-locate" href="<%= url('/p/' + code + '/activar') %>">Activar mi placa</a>
+  <p class="muted small">Codigo de la placa: <strong><%= code %></strong></p>
+</section>
+
+<section class="card card-tip">
+  <h2>Encontraste una mascota con esta placa?</h2>
+  <p>
+    Su familia todavia no termino de registrarla, asi que no tenemos datos de
+    contacto. Llevala a una veterinaria para revisar si tiene microchip, o
+    publicala en los grupos de mascotas perdidas de la comuna.
+  </p>
+</section>
+
+<%- include('../partials/public-foot') %>

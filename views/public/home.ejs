@@ -1,0 +1,30 @@
+<%- include('../partials/public-head') %>
+
+<section class="hero">
+  <div class="hero-badge">&#128062; <%= brand %> Find</div>
+  <h1 class="pet-name">Placas QR para mascotas</h1>
+  <p class="pet-claim">
+    Cada placa lleva un codigo QR unico. Quien encuentre a la mascota lo escanea
+    con la camara del celular y ve al instante como contactar a su familia,
+    ademas de poder enviarle su ubicacion exacta.
+  </p>
+</section>
+
+<section class="card">
+  <h2>Como funciona</h2>
+  <ol class="steps">
+    <li>Compras la placa y la enganchas al collar.</li>
+    <li>Escaneas su QR, ingresas el PIN del empaque y registras a tu mascota.</li>
+    <li>Confirmas tu correo con un codigo y la placa queda activa.</li>
+    <li>Si tu mascota se pierde, quien la encuentre escanea el QR, te llama y
+        te puede enviar su ubicacion exacta.</li>
+  </ol>
+</section>
+
+<section class="card card-primary">
+  <h2>Ya tienes una placa?</h2>
+  <p>Escanea su QR para activarla, o entra aqui para editar tus datos.</p>
+  <a class="btn btn-locate" href="<%= url('/mis-datos') %>">Mis datos</a>
+</section>
+
+<%- include('../partials/public-foot') %>

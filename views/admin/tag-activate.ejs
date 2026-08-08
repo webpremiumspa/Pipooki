@@ -1,0 +1,144 @@
+<%- include('../partials/admin-head') %>
+
+<div class="page-head">
+  <h1>Activar placa <code><%= tag.code %></code></h1>
+  <div class="page-actions">
+    <a class="btn btn-ghost" href="<%= url('/admin/placas/' + tag.id) %>">Volver</a>
+  </div>
+</div>
+
+<div class="flash flash-warn">
+  Alta manual, para cuando el dueno no puede hacerlo solo. No se pide el PIN ni
+  se registra el consentimiento en linea: asegurate de tener su autorizacion.
+</div>
+
+<% if (errors.length) { %>
+  <div class="alert">
+    <ul><% errors.forEach(function (e) { %><li><%= e %></li><% }); %></ul>
+  </div>
+<% } %>
+
+<form class="panel form" method="post" enctype="multipart/form-data"
+      action="<%= url('/admin/placas/' + tag.id + '/activar') %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <h2>Dueno</h2>
+  <div class="field">
+    <label for="owner_id">Dueno ya registrado</label>
+    <select id="owner_id" name="owner_id">
+      <option value="">-- Crear uno nuevo --</option>
+      <% owners.forEach(function (o) { %>
+        <option value="<%= o.id %>" <%= String(owner.id) === String(o.id) ? 'selected' : '' %>>
+          <%= o.name %> (<%= o.email %>)
+        </option>
+      <% }); %>
+    </select>
+    <small>Si eligas uno de la lista, se ignoran los campos de mas abajo.</small>
+  </div>
+
+  <div class="grid-2">
+    <div class="field">
+      <label for="name">Nombre completo</label>
+      <input id="name" name="name" value="<%= owner.name || '' %>" maxlength="150">
+    </div>
+    <div class="field">
+      <label for="email">Correo</label>
+      <input id="email" name="email" type="email" value="<%= owner.email || '' %>" maxlength="190">
+      <small>Con este correo el dueno entra despues a editar sus datos.</small>
+    </div>
+    <div class="field">
+      <label for="phone">Telefono</label>
+      <input id="phone" name="phone" value="<%= owner.phone || '' %>" maxlength="40" placeholder="+56 9 1234 5678">
+    </div>
+    <div class="field">
+      <label for="phone_alt">Telefono alternativo</label>
+      <input id="phone_alt" name="phone_alt" value="<%= owner.phone_alt || '' %>" maxlength="40">
+    </div>
+    <div class="field">
+      <label for="address">Direccion</label>
+      <input id="address" name="address" value="<%= owner.address || '' %>" maxlength="255">
+    </div>
+    <div class="field">
+      <label for="comuna">Comuna</label>
+      <input id="comuna" name="comuna" value="<%= owner.comuna || '' %>" maxlength="120">
+    </div>
+    <div class="field">
+      <label for="city">Ciudad / Region</label>
+      <input id="city" name="city" value="<%= owner.city || '' %>" maxlength="120">
+    </div>
+    <div class="field">
+      <label for="notes">Notas internas</label>
+      <input id="notes" name="notes" maxlength="2000">
+    </div>
+  </div>
+
+  <h2>Mascota</h2>
+  <div class="grid-2">
+    <div class="field">
+      <label for="pet_name">Nombre *</label>
+      <input id="pet_name" name="pet_name" value="<%= pet.name || '' %>" maxlength="120">
+    </div>
+    <div class="field">
+      <label for="pet_species">Especie</label>
+      <select id="pet_species" name="pet_species">
+        <% SPECIES.forEach(function (s) { %>
+          <option value="<%= s %>" <%= pet.species === s ? 'selected' : '' %>><%= s %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="field">
+      <label for="pet_breed">Raza</label>
+      <input id="pet_breed" name="pet_breed" value="<%= pet.breed || '' %>" maxlength="120">
+    </div>
+    <div class="field">
+      <label for="pet_color">Color / senas</label>
+      <input id="pet_color" name="pet_color" value="<%= pet.color || '' %>" maxlength="120">
+    </div>
+    <div class="field">
+      <label for="pet_sex">Sexo</label>
+      <select id="pet_sex" name="pet_sex">
+        <option value="">Sin especificar</option>
+        <option value="macho" <%= pet.sex === 'macho' ? 'selected' : '' %>>Macho</option>
+        <option value="hembra" <%= pet.sex === 'hembra' ? 'selected' : '' %>>Hembra</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="pet_birth_year">Ano de nacimiento</label>
+      <input id="pet_birth_year" name="pet_birth_year" type="number" min="1990"
+             max="<%= new Date().getFullYear() %>" value="<%= pet.birth_year || '' %>">
+    </div>
+    <div class="field">
+      <label for="pet_chip_number">Microchip</label>
+      <input id="pet_chip_number" name="pet_chip_number" value="<%= pet.chip_number || '' %>" maxlength="60">
+    </div>
+    <div class="field">
+      <label for="reward_note">Recompensa</label>
+      <input id="reward_note" name="reward_note" maxlength="255">
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="photo">Foto</label>
+    <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" data-resize="1000">
+  </div>
+
+  <div class="field">
+    <label for="pet_medical_notes">Datos medicos (se muestran en la pagina publica)</label>
+    <textarea id="pet_medical_notes" name="pet_medical_notes" rows="3" maxlength="2000"><%= pet.medical_notes || '' %></textarea>
+  </div>
+
+  <div class="field">
+    <label for="pet_behavior_notes">Como acercarse (se muestra en la pagina publica)</label>
+    <textarea id="pet_behavior_notes" name="pet_behavior_notes" rows="3" maxlength="2000"><%= pet.behavior_notes || '' %></textarea>
+  </div>
+
+  <label class="check">
+    <input type="checkbox" name="pet_sterilized" value="1" <%= pet.sterilized ? 'checked' : '' %>> Esterilizado
+  </label>
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">Activar la placa</button>
+  </div>
+</form>
+
+<script src="<%= url('/js/photo.js') %>"></script>
+<%- include('../partials/admin-foot') %>

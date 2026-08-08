@@ -1,0 +1,95 @@
+<%- include('../partials/admin-head') %>
+
+<div class="page-head">
+  <h1><%= owner.name %></h1>
+  <div class="page-actions">
+    <a class="btn btn-ghost" href="<%= url('/admin/duenos') %>">Volver</a>
+    <a class="btn btn-primary" href="<%= url('/admin/duenos/' + owner.id + '/editar') %>">Editar</a>
+  </div>
+</div>
+
+<section class="panel">
+  <h2>Datos de contacto</h2>
+  <dl class="facts">
+    <div><dt>Telefono</dt><dd><%= phone.pretty(owner.phone) %></dd></div>
+    <% if (owner.phone_alt) { %><div><dt>Alternativo</dt><dd><%= phone.pretty(owner.phone_alt) %></dd></div><% } %>
+    <div><dt>Correo</dt><dd><%= owner.email %></dd></div>
+    <div>
+      <dt>Correo verificado</dt>
+      <dd>
+        <% if (owner.email_verified_at) { %>
+          Si, el <%= new Intl.DateTimeFormat('es-CL', { dateStyle: 'short' }).format(owner.email_verified_at) %>
+        <% } else { %>
+          <span class="muted">No (alta manual)</span>
+        <% } %>
+      </dd>
+    </div>
+    <div><dt>Direccion</dt><dd><%= [owner.address, owner.comuna, owner.city].filter(Boolean).join(', ') || '-' %></dd></div>
+    <div>
+      <dt>Autorizacion</dt>
+      <dd>
+        <% if (owner.consent_at) { %>
+          Aceptada el
+          <%= new Intl.DateTimeFormat('es-CL', { dateStyle: 'short', timeStyle: 'short' }).format(owner.consent_at) %>
+          <span class="muted small">(v<%= owner.consent_version %>, IP <%= owner.consent_ip || '-' %>)</span>
+        <% } else { %>
+          <span class="muted">Sin registro en linea (alta manual)</span>
+        <% } %>
+      </dd>
+    </div>
+  </dl>
+  <% if (owner.notes) { %>
+    <h3>Notas internas</h3>
+    <p class="muted"><%= owner.notes %></p>
+  <% } %>
+</section>
+
+<section class="panel">
+  <h2>Como entra el dueno</h2>
+  <p class="muted small">
+    No hay clave ni enlace permanente: entra a <%= config.ownerAreaUrl() %> con
+    <strong><%= owner.email %></strong> y recibe un codigo de un solo uso.
+    Si perdio el acceso a ese buzon, cambiale el correo desde "Editar": eso le
+    devuelve el acceso.
+  </p>
+</section>
+
+<section class="panel">
+  <h2>Mascotas y placas (<%= pets.length %>)</h2>
+  <% if (!pets.length) { %>
+    <p class="muted">Este dueno no tiene mascotas registradas.</p>
+  <% } else { %>
+    <table class="table">
+      <thead><tr><th>Mascota</th><th>Especie</th><th>Placa</th><th>Estado</th><th></th></tr></thead>
+      <tbody>
+      <% pets.forEach(function (p) { %>
+        <tr>
+          <td><strong><%= p.name %></strong></td>
+          <td><%= p.species %></td>
+          <td><% if (p.code) { %><code><%= p.code %></code><% } else { %><span class="muted">Sin placa</span><% } %></td>
+          <td><%= p.tag_status || '-' %></td>
+          <td class="right">
+            <% if (p.tag_id) { %><a href="<%= url('/admin/placas/' + p.tag_id) %>">Placa</a> · <% } %>
+            <a href="<%= url('/admin/mascotas/' + p.id + '/editar') %>">Editar</a>
+          </td>
+        </tr>
+      <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</section>
+
+<section class="panel danger-zone">
+  <h2>Eliminar dueno</h2>
+  <p class="muted">
+    Se borran tambien sus mascotas y sus placas vuelven al inventario, pero con
+    el mismo PIN. No se puede deshacer.
+  </p>
+  <form method="post" action="<%= url('/admin/duenos/' + owner.id + '/eliminar') %>"
+        data-confirm="Seguro que quieres eliminar a <%= owner.name %> y sus <%= pets.length %> mascota(s)?">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <button class="btn btn-danger" type="submit">Eliminar dueno</button>
+  </form>
+</section>
+
+<%- include('../partials/admin-foot') %>

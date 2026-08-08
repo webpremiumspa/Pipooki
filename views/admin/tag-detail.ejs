@@ -1,0 +1,141 @@
+<%- include('../partials/admin-head') %>
+
+<div class="page-head">
+  <h1>Placa <code><%= tag.code %></code></h1>
+  <div class="page-actions">
+    <a class="btn btn-ghost" href="<%= url('/admin/placas') %>">Volver</a>
+    <a class="btn btn-ghost" href="<%= url('/p/' + tag.code) %>" target="_blank" rel="noopener">Ver pagina publica</a>
+    <% if (tag.status === 'libre') { %>
+      <a class="btn btn-primary" href="<%= url('/admin/placas/' + tag.id + '/activar') %>">Activar manualmente</a>
+    <% } %>
+  </div>
+</div>
+
+<% if (tag.status === 'suspendida') { %>
+  <div class="flash flash-warn">
+    Placa suspendida<%= tag.suspend_reason ? ': ' + tag.suspend_reason : '' %>. No muestra datos de contacto.
+  </div>
+<% } else if (tag.status === 'pausada') { %>
+  <div class="flash flash-warn">El dueno pauso esta placa. No muestra datos de contacto.</div>
+<% } %>
+
+<% if (claim) { %>
+  <div class="flash flash-warn">
+    Hay un registro a medio hacer con el correo <strong><%= claim.email %></strong>,
+    esperando confirmacion hasta el
+    <%= new Intl.DateTimeFormat('es-CL', { dateStyle: 'short', timeStyle: 'short' }).format(claim.expires_at) %>.
+    <form method="post" action="<%= url('/admin/placas/' + tag.id + '/descartar-registro') %>" style="margin-top:10px;"
+          data-confirm="Descartar el registro pendiente?">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button class="btn btn-ghost" type="submit">Descartar y liberar</button>
+    </form>
+  </div>
+<% } %>
+
+<% if (tag.pin_attempts > 0) { %>
+  <div class="flash flash-warn">
+    Van <%= tag.pin_attempts %> intentos fallidos de PIN en esta placa.
+  </div>
+<% } %>
+
+<div class="qr-layout">
+  <section class="panel qr-panel">
+    <img class="qr-img" src="<%= qrPreview %>" alt="Codigo QR de la placa <%= tag.code %>">
+    <div class="qr-downloads">
+      <a class="btn btn-primary" href="<%= url('/admin/placas/' + tag.id + '/qr.png?size=1024') %>">Descargar PNG 1024 px</a>
+      <a class="btn btn-ghost" href="<%= url('/admin/placas/' + tag.id + '/qr.png?size=2048') %>">2048 px</a>
+      <a class="btn btn-ghost" href="<%= url('/admin/placas/' + tag.id + '/qr.png?size=512') %>">512 px</a>
+    </div>
+    <p class="muted small">
+      Correccion de errores nivel Q: sigue leyendose con hasta un 25% de la
+      superficie danada. Imprime a 25 mm o mas y deja el borde blanco.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>Datos de la placa</h2>
+    <dl class="facts">
+      <div><dt>Codigo</dt><dd><code><%= tag.code %></code></dd></div>
+      <div><dt>PIN del empaque</dt><dd><code class="pin"><%= tag.pin %></code></dd></div>
+      <div><dt>Estado</dt><dd><%= tag.status %></dd></div>
+      <div><dt>Lote</dt><dd><%= tag.batch_label || '-' %></dd></div>
+      <% if (tag.pet_id) { %>
+        <div><dt>Mascota</dt><dd><a href="<%= url('/admin/mascotas/' + tag.pet_id + '/editar') %>"><%= tag.pet_name %></a></dd></div>
+        <div><dt>Dueno</dt><dd><a href="<%= url('/admin/duenos/' + tag.owner_id) %>"><%= tag.owner_name %></a></dd></div>
+        <div><dt>Activada</dt><dd><%= tag.claimed_at ? new Intl.DateTimeFormat('es-CL', { dateStyle: 'short', timeStyle: 'short' }).format(tag.claimed_at) : '-' %></dd></div>
+      <% } %>
+    </dl>
+
+    <label for="tagUrl">Direccion que abre el QR</label>
+    <div class="copy-row">
+      <input id="tagUrl" type="text" readonly value="<%= tagUrl %>">
+      <button class="btn btn-ghost" type="button" data-copy="#tagUrl">Copiar</button>
+    </div>
+  </section>
+</div>
+
+<section class="panel danger-zone">
+  <h2>Acciones</h2>
+
+  <% if (tag.status === 'activa' || tag.status === 'pausada') { %>
+    <h3>Suspender</h3>
+    <p class="muted small">Deja de mostrar datos. Al dueno le llega un correo con el motivo.</p>
+    <form method="post" action="<%= url('/admin/placas/' + tag.id + '/suspender') %>"
+          data-confirm="Suspender esta placa?">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field"><input name="reason" maxlength="255" placeholder="Motivo (se le envia al dueno)"></div>
+      <button class="btn btn-danger" type="submit">Suspender placa</button>
+    </form>
+  <% } %>
+
+  <% if (tag.status === 'suspendida') { %>
+    <h3>Reactivar</h3>
+    <form method="post" action="<%= url('/admin/placas/' + tag.id + '/reactivar') %>">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button class="btn btn-primary" type="submit">Reactivar placa</button>
+    </form>
+  <% } %>
+
+  <% if (tag.pet_id) { %>
+    <h3>Liberar</h3>
+    <p class="muted small">
+      Devuelve la placa al inventario con un PIN nuevo, para volver a venderla.
+      La mascota y el dueno no se borran, pero la placa deja de apuntarles.
+      Hay que imprimir el inserto de nuevo.
+    </p>
+    <form method="post" action="<%= url('/admin/placas/' + tag.id + '/liberar') %>"
+          data-confirm="Liberar la placa <%= tag.code %>? Se genera un PIN nuevo y el inserto actual deja de servir.">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button class="btn btn-danger" type="submit">Liberar placa</button>
+    </form>
+  <% } %>
+</section>
+
+<% if (tag.pet_id) { %>
+  <section class="panel">
+    <h2>Escaneos</h2>
+    <% if (!scans.length) { %>
+      <p class="muted">Esta placa no se ha escaneado todavia.</p>
+    <% } else { %>
+      <table class="table">
+        <thead><tr><th>Fecha</th><th>Ubicacion</th><th>Precision</th><th>Vio la direccion</th></tr></thead>
+        <tbody>
+        <% scans.forEach(function (s) { %>
+          <tr>
+            <td><%= new Intl.DateTimeFormat('es-CL', { dateStyle: 'short', timeStyle: 'short' }).format(s.scanned_at) %></td>
+            <td>
+              <% if (s.lat && s.lng) { %>
+                <a href="https://www.google.com/maps/search/?api=1&query=<%= s.lat %>,<%= s.lng %>" target="_blank" rel="noopener">Ver mapa</a>
+              <% } else { %><span class="muted">Sin ubicacion</span><% } %>
+            </td>
+            <td><%= s.accuracy_m ? s.accuracy_m + ' m' : '-' %></td>
+            <td><%= s.address_revealed ? 'Si' : 'No' %></td>
+          </tr>
+        <% }); %>
+        </tbody>
+      </table>
+    <% } %>
+  </section>
+<% } %>
+
+<%- include('../partials/admin-foot') %>

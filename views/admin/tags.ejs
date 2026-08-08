@@ -1,0 +1,94 @@
+<%- include('../partials/admin-head') %>
+
+<div class="page-head">
+  <h1>Placas</h1>
+  <div class="page-actions">
+    <form class="search" method="get" action="<%= url('/admin/placas') %>">
+      <input type="search" name="q" value="<%= q %>" placeholder="Codigo, mascota, dueno o correo...">
+      <select name="status">
+        <option value="">Todos los estados</option>
+        <option value="libre" <%= status === 'libre' ? 'selected' : '' %>>Libres</option>
+        <option value="activa" <%= status === 'activa' ? 'selected' : '' %>>Activas</option>
+        <option value="pausada" <%= status === 'pausada' ? 'selected' : '' %>>Pausadas</option>
+        <option value="suspendida" <%= status === 'suspendida' ? 'selected' : '' %>>Suspendidas</option>
+      </select>
+      <button class="btn btn-ghost" type="submit">Filtrar</button>
+    </form>
+  </div>
+</div>
+
+<section class="panel">
+  <h2>Fabricar un lote</h2>
+  <p class="muted small">
+    Genera placas libres con su codigo y su PIN. El PIN va en el inserto del
+    empaque, nunca grabado en la placa.
+  </p>
+  <form class="form" method="post" action="<%= url('/admin/placas/lote') %>">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="grid-2">
+      <div class="field">
+        <label for="quantity">Cantidad</label>
+        <input id="quantity" name="quantity" type="number" min="1" max="500" value="<%= batchSize %>">
+      </div>
+      <div class="field">
+        <label for="label">Nombre del lote</label>
+        <input id="label" name="label" maxlength="150" placeholder="Ej: primera tirada agosto">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Generar lote</button>
+    </div>
+  </form>
+</section>
+
+<% if (batches.length) { %>
+  <section class="panel">
+    <h2>Lotes</h2>
+    <table class="table">
+      <thead><tr><th>Lote</th><th>Placas</th><th>Libres</th><th>Fecha</th><th></th></tr></thead>
+      <tbody>
+      <% batches.forEach(function (b) { %>
+        <tr>
+          <td><strong><%= b.label %></strong></td>
+          <td><%= b.quantity %></td>
+          <td><%= b.free %></td>
+          <td class="small"><%= new Intl.DateTimeFormat('es-CL', { dateStyle: 'short' }).format(b.created_at) %></td>
+          <td class="right">
+            <a href="<%= url('/admin/placas/lote/' + b.id + '/imprimir') %>" target="_blank" rel="noopener">Hoja de impresion</a> ·
+            <a href="<%= url('/admin/placas/lote/' + b.id + '/csv') %>">CSV</a>
+          </td>
+        </tr>
+      <% }); %>
+      </tbody>
+    </table>
+  </section>
+<% } %>
+
+<% if (!tags.length) { %>
+  <div class="panel"><p class="muted">No hay placas que coincidan.</p></div>
+<% } else { %>
+  <table class="table">
+    <thead><tr><th>Codigo</th><th>Estado</th><th>Mascota</th><th>Dueno</th><th>Escaneos</th><th></th></tr></thead>
+    <tbody>
+    <% tags.forEach(function (t) { %>
+      <tr>
+        <td><code><%= t.code %></code></td>
+        <td>
+          <% const pill = t.status === 'activa' ? 'pill-ok' : (t.status === 'libre' ? 'pill-free' : 'pill-warn'); %>
+          <span class="pill <%= pill %>"><%= t.status %></span>
+        </td>
+        <td><%= t.pet_name || '-' %></td>
+        <td>
+          <% if (t.owner_id) { %>
+            <a href="<%= url('/admin/duenos/' + t.owner_id) %>"><%= t.owner_name %></a>
+          <% } else { %><span class="muted">-</span><% } %>
+        </td>
+        <td><%= t.pet_id ? t.scan_count : '-' %></td>
+        <td class="right"><a href="<%= url('/admin/placas/' + t.id) %>">Ver</a></td>
+      </tr>
+    <% }); %>
+    </tbody>
+  </table>
+<% } %>
+
+<%- include('../partials/admin-foot') %>

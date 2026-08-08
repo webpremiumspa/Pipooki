@@ -1,0 +1,61 @@
+<%- include('../partials/admin-head') %>
+
+<div class="page-head">
+  <h1>Panel</h1>
+  <div class="page-actions">
+    <a class="btn btn-primary" href="<%= url('/admin/placas') %>">Fabricar placas</a>
+  </div>
+</div>
+
+<% if (!smtpReady) { %>
+  <div class="flash flash-warn">
+    El correo saliente (SMTP) no esta configurado. Sin el nadie puede activar una
+    placa, porque no le llega el codigo de confirmacion. Completa las variables
+    SMTP_* en el archivo .env.
+  </div>
+<% } %>
+
+<% if (stats.libre === 0) { %>
+  <div class="flash flash-warn">
+    No te quedan placas libres en el inventario.
+    <a href="<%= url('/admin/placas') %>">Fabricar un lote nuevo</a>
+  </div>
+<% } %>
+
+<div class="stats">
+  <div class="stat"><span class="stat-num"><%= stats.libre %></span><span class="stat-lab">Placas libres</span></div>
+  <div class="stat"><span class="stat-num"><%= stats.activa %></span><span class="stat-lab">Activas</span></div>
+  <div class="stat"><span class="stat-num"><%= stats.pausada + stats.suspendida %></span><span class="stat-lab">Pausadas o suspendidas</span></div>
+  <div class="stat"><span class="stat-num"><%= stats.owners %></span><span class="stat-lab">Duenos</span></div>
+  <div class="stat"><span class="stat-num"><%= stats.scans30 %></span><span class="stat-lab">Escaneos (30 dias)</span></div>
+</div>
+
+<section class="panel">
+  <h2>Ultimos escaneos</h2>
+  <% if (!recent.length) { %>
+    <p class="muted">Todavia no hay escaneos registrados.</p>
+  <% } else { %>
+    <table class="table">
+      <thead><tr><th>Fecha</th><th>Mascota</th><th>Dueno</th><th>Ubicacion</th></tr></thead>
+      <tbody>
+      <% recent.forEach(function (s) { %>
+        <tr>
+          <td><%= new Intl.DateTimeFormat('es-CL', { dateStyle: 'short', timeStyle: 'short' }).format(s.scanned_at) %></td>
+          <td><%= s.pet_name %> <% if (s.code) { %><code><%= s.code %></code><% } %></td>
+          <td><%= s.owner_name %></td>
+          <td>
+            <% if (s.lat && s.lng) { %>
+              <a href="https://www.google.com/maps/search/?api=1&query=<%= s.lat %>,<%= s.lng %>" target="_blank" rel="noopener">Ver mapa</a>
+            <% } else { %>
+              <span class="muted">Sin ubicacion</span>
+            <% } %>
+          </td>
+        </tr>
+      <% }); %>
+      </tbody>
+    </table>
+    <p><a href="<%= url('/admin/escaneos') %>">Ver todos los escaneos</a></p>
+  <% } %>
+</section>
+
+<%- include('../partials/admin-foot') %>

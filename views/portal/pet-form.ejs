@@ -1,0 +1,94 @@
+<%- include('../partials/public-head') %>
+
+<section class="hero">
+  <div class="hero-badge">&#128062; <%= brand %> Find</div>
+  <h1 class="pet-name"><%= pet.name %></h1>
+</section>
+
+<% if (errors.length) { %>
+  <div class="card card-alert">
+    <h2>Revisa estos datos</h2>
+    <ul class="errors"><% errors.forEach(function (e) { %><li><%= e %></li><% }); %></ul>
+  </div>
+<% } %>
+
+<form method="post" enctype="multipart/form-data" action="<%= url('/mis-datos/mascota/' + pet.id) %>">
+  <section class="card">
+    <div class="field">
+      <label for="name">Nombre *</label>
+      <input id="name" name="name" value="<%= pet.name || '' %>" required maxlength="120">
+    </div>
+
+    <div class="field">
+      <label for="species">Especie</label>
+      <select id="species" name="species">
+        <% SPECIES.forEach(function (s) { %>
+          <option value="<%= s %>" <%= pet.species === s ? 'selected' : '' %>><%= s %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="breed">Raza</label>
+      <input id="breed" name="breed" value="<%= pet.breed || '' %>" maxlength="120">
+    </div>
+
+    <div class="field">
+      <label for="color">Color y senas particulares</label>
+      <input id="color" name="color" value="<%= pet.color || '' %>" maxlength="120">
+    </div>
+
+    <div class="field">
+      <label for="sex">Sexo</label>
+      <select id="sex" name="sex">
+        <option value="">Sin especificar</option>
+        <option value="macho" <%= pet.sex === 'macho' ? 'selected' : '' %>>Macho</option>
+        <option value="hembra" <%= pet.sex === 'hembra' ? 'selected' : '' %>>Hembra</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="birth_year">Ano de nacimiento</label>
+      <input id="birth_year" name="birth_year" type="number" min="1990"
+             max="<%= new Date().getFullYear() %>" value="<%= pet.birth_year || '' %>">
+    </div>
+
+    <div class="field">
+      <label for="chip_number">Numero de microchip</label>
+      <input id="chip_number" name="chip_number" value="<%= pet.chip_number || '' %>" maxlength="60">
+    </div>
+
+    <div class="field">
+      <label for="photo">Foto</label>
+      <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" data-resize="1000">
+      <% if (pet.photo) { %>
+        <div class="photo-current">
+          <img src="<%= url('/uploads/' + pet.photo) %>" alt="Foto actual">
+          <label class="check"><input type="checkbox" name="remove_photo" value="1"> Quitar la foto actual</label>
+        </div>
+      <% } %>
+    </div>
+
+    <label class="check">
+      <input type="checkbox" name="sterilized" value="1" <%= pet.sterilized ? 'checked' : '' %>>
+      Esta esterilizado
+    </label>
+
+    <div class="field">
+      <label for="medical_notes">Datos medicos importantes</label>
+      <textarea id="medical_notes" name="medical_notes" rows="3" maxlength="2000"><%= pet.medical_notes || '' %></textarea>
+      <small>Se muestra en la placa.</small>
+    </div>
+
+    <div class="field">
+      <label for="behavior_notes">Como acercarse a el</label>
+      <textarea id="behavior_notes" name="behavior_notes" rows="3" maxlength="2000"><%= pet.behavior_notes || '' %></textarea>
+    </div>
+
+    <button class="btn btn-locate" type="submit">Guardar cambios</button>
+    <a class="btn btn-ghost" href="<%= url('/mis-datos/panel') %>">Volver</a>
+  </section>
+</form>
+
+<script src="<%= url('/js/photo.js') %>"></script>
+<%- include('../partials/public-foot') %>

@@ -1,0 +1,118 @@
+<%- include('../partials/public-head') %>
+
+<%
+  const emoji = tag.species === 'gato' ? '\u{1F431}' : (tag.species === 'perro' ? '\u{1F436}' : '\u{1F43E}');
+  const age = tag.birth_year ? (new Date().getFullYear() - tag.birth_year) : null;
+  const facts = [];
+  if (tag.breed) facts.push(['Raza', tag.breed]);
+  if (tag.color) facts.push(['Color', tag.color]);
+  if (tag.sex) facts.push(['Sexo', tag.sex === 'macho' ? 'Macho' : 'Hembra']);
+  if (age !== null && age >= 0) facts.push(['Edad', age === 0 ? 'Menos de 1 ano' : age + (age === 1 ? ' ano' : ' anos')]);
+  if (tag.sterilized) facts.push(['Esterilizado', 'Si']);
+  if (tag.chip_number) facts.push(['Microchip', tag.chip_number]);
+%>
+
+<% if (justActivated) { %>
+  <div class="card card-ok">
+    <h2>&#9989; Tu placa quedo activa</h2>
+    <p>Esto es lo que vera quien encuentre a <strong><%= tag.pet_name %></strong>. Revisa que este todo bien.</p>
+    <a class="btn btn-ghost" href="<%= url('/mis-datos/panel') %>">Ir a mis datos</a>
+  </div>
+<% } %>
+
+<section class="hero">
+  <div class="hero-badge"><%= emoji %> Placa de identificacion</div>
+  <% if (tag.photo) { %>
+    <img class="pet-photo" src="<%= url('/uploads/' + tag.photo) %>" alt="Foto de <%= tag.pet_name %>">
+  <% } else { %>
+    <div class="pet-photo pet-photo-empty"><%= emoji %></div>
+  <% } %>
+  <h1 class="pet-name">Hola, soy <%= tag.pet_name %></h1>
+  <p class="pet-claim">Si me estas leyendo es porque me perdi.<br>Ayudame a volver a casa.</p>
+</section>
+
+<% if (tag.medical_notes) { %>
+  <section class="card card-alert">
+    <h2>Atencion medica</h2>
+    <p><%= tag.medical_notes %></p>
+  </section>
+<% } %>
+
+<% if (tag.behavior_notes) { %>
+  <section class="card card-tip">
+    <h2>Como acercarse a mi</h2>
+    <p><%= tag.behavior_notes %></p>
+  </section>
+<% } %>
+
+<section class="card card-primary" id="contacto">
+  <h2>Contacta a mi familia</h2>
+  <p class="owner-line"><strong><%= ownerFirstName %></strong> es quien me cuida.</p>
+
+  <a class="btn btn-call" href="tel:<%= phoneTel %>">Llamar al <%= phonePretty %></a>
+  <% if (phoneWa) { %>
+    <a class="btn btn-wa" href="https://wa.me/<%= phoneWa %>" target="_blank" rel="noopener">Escribir por WhatsApp</a>
+  <% } %>
+  <% if (phoneAltTel) { %>
+    <a class="btn btn-ghost" href="tel:<%= phoneAltTel %>">Telefono alternativo: <%= phoneAltPretty %></a>
+  <% } %>
+
+  <button class="btn btn-ghost" type="button" id="showAddress">Ver direccion de mi casa</button>
+  <div class="address-box" id="addressBox" hidden>
+    <span class="address-label">Direccion registrada</span>
+    <p id="addressText"></p>
+    <a id="addressMap" href="#" target="_blank" rel="noopener" hidden>Abrir en Google Maps</a>
+  </div>
+</section>
+
+<section class="card card-locate" id="ubicacion"
+         data-code="<%= code %>"
+         data-base="<%= url('') %>"
+         data-pet="<%= tag.pet_name %>"
+         data-owner="<%= ownerFirstName %>"
+         data-wa="<%= phoneWa %>"
+         data-tel="<%= phoneTel %>"
+         data-has-email="<%= ownerEmail ? '1' : '' %>">
+  <h2>Enviale mi ubicacion</h2>
+  <p class="muted">Con un toque compartes donde estamos ahora. Tu telefono te pedira permiso para usar el GPS.</p>
+
+  <button class="btn btn-locate" type="button" id="getLocation">Compartir mi ubicacion</button>
+
+  <p class="status" id="locStatus" role="status" aria-live="polite"></p>
+
+  <div id="shareBox" hidden>
+    <p class="share-title">Enviala por:</p>
+    <div class="share-grid">
+      <a class="btn btn-wa" id="shareWa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+      <a class="btn btn-sms" id="shareSms" href="#">SMS</a>
+      <a class="btn btn-mail" id="shareMail" href="#">Correo</a>
+    </div>
+    <a class="map-preview" id="mapPreview" href="#" target="_blank" rel="noopener" hidden>Ver el punto en el mapa</a>
+    <p class="muted small" id="autoNotice" hidden>Ya le avisamos por correo automaticamente.</p>
+  </div>
+
+  <noscript>
+    <p class="status">Para compartir tu ubicacion necesitas activar JavaScript. Igual puedes llamar o escribir al telefono de mas arriba.</p>
+  </noscript>
+</section>
+
+<% if (tag.reward_note) { %>
+  <section class="card card-reward">
+    <h2>Recompensa</h2>
+    <p><%= tag.reward_note %></p>
+  </section>
+<% } %>
+
+<% if (facts.length) { %>
+  <section class="card">
+    <h2>Mis datos</h2>
+    <dl class="facts">
+      <% facts.forEach(function (f) { %>
+        <div><dt><%= f[0] %></dt><dd><%= f[1] %></dd></div>
+      <% }); %>
+    </dl>
+  </section>
+<% } %>
+
+<script src="<%= url('/js/pet.js') %>"></script>
+<%- include('../partials/public-foot') %>

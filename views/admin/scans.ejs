@@ -1,0 +1,46 @@
+<%- include('../partials/admin-head') %>
+
+<div class="page-head">
+  <h1>Escaneos <span class="muted">(<%= total %>)</span></h1>
+</div>
+
+<% if (!scans.length) { %>
+  <div class="panel"><p class="muted">Todavia no hay escaneos registrados.</p></div>
+<% } else { %>
+  <table class="table">
+    <thead>
+      <tr><th>Fecha</th><th>Mascota</th><th>Dueno</th><th>Ubicacion</th><th>Precision</th><th>Direccion</th><th>Aviso</th></tr>
+    </thead>
+    <tbody>
+    <% scans.forEach(function (s) { %>
+      <tr>
+        <td><%= new Intl.DateTimeFormat('es-CL', { dateStyle: 'short', timeStyle: 'short' }).format(s.scanned_at) %></td>
+        <td><% if (s.tag_id) { %><a href="<%= url('/admin/placas/' + s.tag_id) %>"><%= s.pet_name %></a><% } else { %><%= s.pet_name %><% } %></td>
+        <td><%= s.owner_name %></td>
+        <td>
+          <% if (s.lat && s.lng) { %>
+            <a href="https://www.google.com/maps/search/?api=1&query=<%= s.lat %>,<%= s.lng %>" target="_blank" rel="noopener">Ver mapa</a>
+          <% } else { %><span class="muted">-</span><% } %>
+        </td>
+        <td><%= s.accuracy_m ? s.accuracy_m + ' m' : '-' %></td>
+        <td><%= s.address_revealed ? 'Si' : 'No' %></td>
+        <td>
+          <% if (s.notified_location) { %>Ubicacion enviada
+          <% } else if (s.notified_scan) { %>Aviso enviado
+          <% } else { %><span class="muted">-</span><% } %>
+        </td>
+      </tr>
+    <% }); %>
+    </tbody>
+  </table>
+
+  <% if (pages > 1) { %>
+    <nav class="pager">
+      <% if (current > 1) { %><a href="<%= url('/admin/escaneos?page=' + (current - 1)) %>">Anterior</a><% } %>
+      <span>Pagina <%= current %> de <%= pages %></span>
+      <% if (current < pages) { %><a href="<%= url('/admin/escaneos?page=' + (current + 1)) %>">Siguiente</a><% } %>
+    </nav>
+  <% } %>
+<% } %>
+
+<%- include('../partials/admin-foot') %>

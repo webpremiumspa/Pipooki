@@ -1,0 +1,39 @@
+<%- include('../partials/admin-head') %>
+
+<div class="page-head">
+  <h1>Mi cuenta</h1>
+</div>
+
+<% if (done) { %><div class="flash flash-ok">Clave actualizada.</div><% } %>
+<% if (errors.length) { %>
+  <div class="alert"><ul><% errors.forEach(function (e) { %><li><%= e %></li><% }); %></ul></div>
+<% } %>
+
+<form class="panel form narrow" method="post" action="<%= url('/admin/cuenta') %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <dl class="facts">
+    <div><dt>Nombre</dt><dd><%= admin.name %></dd></div>
+    <div><dt>Correo</dt><dd><%= admin.email %></dd></div>
+  </dl>
+
+  <div class="field">
+    <label for="current_password">Clave actual</label>
+    <input id="current_password" name="current_password" type="password" required autocomplete="current-password">
+  </div>
+  <div class="field">
+    <label for="new_password">Clave nueva</label>
+    <input id="new_password" name="new_password" type="password" required minlength="10" autocomplete="new-password">
+    <small>Minimo 10 caracteres.</small>
+  </div>
+  <div class="field">
+    <label for="new_password2">Repetir clave nueva</label>
+    <input id="new_password2" name="new_password2" type="password" required minlength="10" autocomplete="new-password">
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">Cambiar clave</button>
+  </div>
+</form>
+
+<%- include('../partials/admin-foot') %>

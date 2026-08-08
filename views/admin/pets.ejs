@@ -1,0 +1,51 @@
+<%- include('../partials/admin-head') %>
+
+<div class="page-head">
+  <h1>Mascotas</h1>
+  <div class="page-actions">
+    <form class="search" method="get" action="<%= url('/admin/mascotas') %>">
+      <input type="search" name="q" value="<%= q %>" placeholder="Mascota, dueno, codigo de placa o chip...">
+      <button class="btn btn-ghost" type="submit">Buscar</button>
+    </form>
+  </div>
+</div>
+
+<% if (!pets.length) { %>
+  <div class="panel"><p class="muted">No hay mascotas registradas<%= q ? ' que coincidan con la busqueda.' : ' todavia.' %></p></div>
+<% } else { %>
+  <table class="table">
+    <thead><tr><th>Mascota</th><th>Dueno</th><th>Placa</th><th>Estado</th><th>Escaneos</th><th></th></tr></thead>
+    <tbody>
+    <% pets.forEach(function (p) { %>
+      <tr>
+        <td class="cell-pet">
+          <% if (p.photo) { %>
+            <img class="thumb" src="<%= url('/uploads/' + p.photo) %>" alt="">
+          <% } else { %>
+            <span class="thumb thumb-empty"></span>
+          <% } %>
+          <strong><%= p.name %></strong>
+          <span class="muted"><%= p.breed || p.species %></span>
+        </td>
+        <td><a href="<%= url('/admin/duenos/' + p.owner_id) %>"><%= p.owner_name %></a></td>
+        <td>
+          <% if (p.tag_id) { %>
+            <a href="<%= url('/admin/placas/' + p.tag_id) %>"><code><%= p.code %></code></a>
+          <% } else { %><span class="muted">Sin placa</span><% } %>
+        </td>
+        <td>
+          <% if (!p.tag_status) { %>
+            <span class="pill pill-off">sin placa</span>
+          <% } else { %>
+            <span class="pill <%= p.tag_status === 'activa' ? 'pill-ok' : 'pill-warn' %>"><%= p.tag_status %></span>
+          <% } %>
+        </td>
+        <td><%= p.scan_count %></td>
+        <td class="right"><a href="<%= url('/admin/mascotas/' + p.id + '/editar') %>">Editar</a></td>
+      </tr>
+    <% }); %>
+    </tbody>
+  </table>
+<% } %>
+
+<%- include('../partials/admin-foot') %>

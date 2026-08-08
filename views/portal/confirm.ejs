@@ -1,0 +1,43 @@
+<%- include('../partials/public-head') %>
+
+<section class="hero">
+  <div class="hero-badge">&#9993; Ultimo paso</div>
+  <h1 class="pet-name">Confirma tu correo</h1>
+  <p class="pet-claim">
+    Enviamos un codigo de 6 digitos a <strong><%= maskedEmail %></strong>.
+    Ingresalo para activar la placa.
+  </p>
+</section>
+
+<% if (resent) { %>
+  <div class="card card-ok"><p>Te enviamos un codigo nuevo. Revisa tu correo.</p></div>
+<% } %>
+
+<% if (error) { %>
+  <div class="card card-alert"><p><%= error %></p></div>
+<% } %>
+
+<form method="post" action="<%= url('/p/' + code + '/confirmar') %>">
+  <section class="card card-primary">
+    <div class="field">
+      <label for="code">Codigo de 6 digitos</label>
+      <input id="code" name="code" class="otp-input" inputmode="numeric" pattern="[0-9]*"
+             maxlength="6" required autocomplete="one-time-code" autofocus placeholder="000000">
+    </div>
+    <button class="btn btn-locate" type="submit">Activar la placa</button>
+  </section>
+</form>
+
+<section class="card">
+  <h2>No te llego?</h2>
+  <p class="muted">
+    Revisa la carpeta de correo no deseado. El codigo puede demorar un par de
+    minutos en llegar.
+  </p>
+  <form method="post" action="<%= url('/p/' + code + '/confirmar/reenviar') %>">
+    <button class="btn btn-ghost" type="submit">Enviarme otro codigo</button>
+  </form>
+  <a class="btn btn-ghost" href="<%= url('/p/' + code + '/activar') %>">Me equivoque de correo, volver al formulario</a>
+</section>
+
+<%- include('../partials/public-foot') %>

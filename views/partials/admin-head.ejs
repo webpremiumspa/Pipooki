@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title><%= title %> · <%= brand %></title>
+  <link rel="stylesheet" href="<%= url('/css/admin.css') %>">
+</head>
+<body>
+<header class="topbar">
+  <a class="logo" href="<%= url('/admin') %>"><%= brand %> <span>Find</span></a>
+  <nav class="nav">
+    <a href="<%= url('/admin') %>" class="<%= section === 'dashboard' ? 'on' : '' %>">Panel</a>
+    <a href="<%= url('/admin/placas') %>" class="<%= section === 'placas' ? 'on' : '' %>">Placas</a>
+    <a href="<%= url('/admin/duenos') %>" class="<%= section === 'duenos' ? 'on' : '' %>">Duenos</a>
+    <a href="<%= url('/admin/mascotas') %>" class="<%= section === 'mascotas' ? 'on' : '' %>">Mascotas</a>
+    <a href="<%= url('/admin/escaneos') %>" class="<%= section === 'escaneos' ? 'on' : '' %>">Escaneos</a>
+  </nav>
+  <div class="topbar-right">
+    <a class="who" href="<%= url('/admin/cuenta') %>"><%= admin.name %></a>
+    <form method="post" action="<%= url('/admin/logout') %>">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button class="btn-link" type="submit">Salir</button>
+    </form>
+  </div>
+</header>
+<main class="page">
+<% if (flash) { %>
+  <div class="flash flash-<%= flash.type %>"><%= flash.msg %></div>
+<% } %>

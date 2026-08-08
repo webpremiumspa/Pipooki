@@ -1,0 +1,34 @@
+<%- include('../partials/admin-head') %>
+
+<div class="page-head">
+  <h1>Duenos</h1>
+  <div class="page-actions">
+    <form class="search" method="get" action="<%= url('/admin/duenos') %>">
+      <input type="search" name="q" value="<%= q %>" placeholder="Buscar por nombre, telefono, comuna...">
+      <button class="btn btn-ghost" type="submit">Buscar</button>
+    </form>
+    <a class="btn btn-primary" href="<%= url('/admin/duenos/nuevo') %>">Nuevo dueno</a>
+  </div>
+</div>
+
+<% if (!owners.length) { %>
+  <div class="panel"><p class="muted">No hay duenos registrados<%= q ? ' que coincidan con la busqueda.' : ' todavia.' %></p></div>
+<% } else { %>
+  <table class="table">
+    <thead><tr><th>Nombre</th><th>Telefono</th><th>Correo</th><th>Comuna</th><th>Mascotas</th><th></th></tr></thead>
+    <tbody>
+    <% owners.forEach(function (o) { %>
+      <tr>
+        <td><a href="<%= url('/admin/duenos/' + o.id) %>"><strong><%= o.name %></strong></a></td>
+        <td><%= phone.pretty(o.phone) %></td>
+        <td><%= o.email || '-' %></td>
+        <td><%= o.comuna || '-' %></td>
+        <td><%= o.pet_count %></td>
+        <td class="right"><a href="<%= url('/admin/duenos/' + o.id + '/editar') %>">Editar</a></td>
+      </tr>
+    <% }); %>
+    </tbody>
+  </table>
+<% } %>
+
+<%- include('../partials/admin-foot') %>

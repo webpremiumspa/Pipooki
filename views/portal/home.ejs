@@ -1,0 +1,113 @@
+<%- include('../partials/public-head') %>
+
+<section class="hero">
+  <div class="hero-badge">&#128062; <%= brand %> Find</div>
+  <h1 class="pet-name">Hola, <%= owner.name.split(' ')[0] %></h1>
+  <p class="pet-claim">Manten tus datos al dia: de eso depende que te devuelvan a tu mascota.</p>
+</section>
+
+<% if (saved) { %>
+  <div class="card card-ok"><p><strong>Listo.</strong> Guardamos los cambios.</p></div>
+<% } %>
+
+<% if (errors.length) { %>
+  <div class="card card-alert">
+    <h2>Revisa estos datos</h2>
+    <ul class="errors"><% errors.forEach(function (e) { %><li><%= e %></li><% }); %></ul>
+  </div>
+<% } %>
+
+<section class="card">
+  <h2>Mis placas</h2>
+  <% if (!tags.length) { %>
+    <p class="muted">No tienes placas activas.</p>
+  <% } else { %>
+    <ul class="pet-list">
+      <% tags.forEach(function (t) { %>
+        <li class="pet-item">
+          <% if (t.photo) { %>
+            <img class="pet-thumb" src="<%= url('/uploads/' + t.photo) %>" alt="">
+          <% } else { %>
+            <span class="pet-thumb pet-thumb-empty">&#128062;</span>
+          <% } %>
+          <div class="pet-item-body">
+            <strong><%= t.pet_name %></strong>
+            <span class="muted small">
+              Placa <%= t.code %> ·
+              <% if (t.status === 'activa') { %>activa
+              <% } else if (t.status === 'pausada') { %>pausada por ti
+              <% } else { %>suspendida<% } %>
+            </span>
+          </div>
+          <div class="pet-item-actions">
+            <a class="btn btn-ghost" href="<%= url('/mis-datos/mascota/' + t.pet_id) %>">Editar</a>
+            <a class="btn btn-ghost" href="<%= url('/p/' + t.code) %>" target="_blank" rel="noopener">Ver</a>
+          </div>
+          <% if (t.status === 'activa' || t.status === 'pausada') { %>
+            <form method="post" action="<%= url('/mis-datos/placa/' + t.tag_id + '/estado') %>" class="pet-item-actions">
+              <% if (t.status === 'activa') { %>
+                <button class="btn btn-ghost" type="submit">Pausar placa</button>
+              <% } else { %>
+                <input type="hidden" name="activar" value="1">
+                <button class="btn btn-ghost" type="submit">Reactivar placa</button>
+              <% } %>
+            </form>
+          <% } %>
+        </li>
+      <% }); %>
+    </ul>
+    <p class="muted small">
+      Pausar una placa hace que deje de mostrar tus datos si alguien la escanea.
+      Tienes otra mascota? Compra otra placa y activala con su propio QR.
+    </p>
+  <% } %>
+</section>
+
+<form method="post" action="<%= url('/mis-datos/panel') %>">
+  <section class="card">
+    <h2>Mis datos de contacto</h2>
+
+    <div class="field">
+      <label for="name">Nombre y apellido *</label>
+      <input id="name" name="name" value="<%= owner.name || '' %>" required maxlength="150">
+    </div>
+    <div class="field">
+      <label for="phone">Telefono *</label>
+      <input id="phone" name="phone" type="tel" value="<%= owner.phone || '' %>" required maxlength="40">
+      <small>Es el numero que se muestra en la placa.</small>
+    </div>
+    <div class="field">
+      <label for="phone_alt">Otro telefono</label>
+      <input id="phone_alt" name="phone_alt" type="tel" value="<%= owner.phone_alt || '' %>" maxlength="40">
+    </div>
+    <div class="field">
+      <label>Correo</label>
+      <input type="email" value="<%= owner.email %>" disabled>
+      <small>
+        Es con lo que entras aqui y donde llegan los avisos. Para cambiarlo,
+        escribenos y lo actualizamos.
+      </small>
+    </div>
+    <div class="field">
+      <label for="address">Direccion</label>
+      <input id="address" name="address" value="<%= owner.address || '' %>" maxlength="255">
+      <small>Se entrega solo a quien la pida desde la pagina de la placa.</small>
+    </div>
+    <div class="field">
+      <label for="comuna">Comuna</label>
+      <input id="comuna" name="comuna" value="<%= owner.comuna || '' %>" maxlength="120">
+    </div>
+    <div class="field">
+      <label for="city">Ciudad o region</label>
+      <input id="city" name="city" value="<%= owner.city || '' %>" maxlength="120">
+    </div>
+
+    <button class="btn btn-locate" type="submit">Guardar cambios</button>
+  </section>
+</form>
+
+<form method="post" action="<%= url('/mis-datos/salir') %>">
+  <button class="btn btn-ghost" type="submit">Cerrar sesion</button>
+</form>
+
+<%- include('../partials/public-foot') %>

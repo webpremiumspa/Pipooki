@@ -1,0 +1,177 @@
+<%- include('../partials/public-head') %>
+
+<section class="hero">
+  <div class="hero-badge">&#128062; <%= brand %> Find</div>
+  <h1 class="pet-name">Activa tu placa</h1>
+  <p class="pet-claim">
+    Estos datos son los que vera quien encuentre a tu mascota al escanear el QR
+    del collar. Revisa bien el telefono.
+  </p>
+</section>
+
+<% if (pinError) { %>
+  <div class="card card-alert">
+    <h2>PIN incorrecto</h2>
+    <p><%= pinError %></p>
+  </div>
+<% } %>
+
+<% if (errors.length) { %>
+  <div class="card card-alert">
+    <h2>Revisa estos datos</h2>
+    <ul class="errors"><% errors.forEach(function (e) { %><li><%= e %></li><% }); %></ul>
+  </div>
+<% } %>
+
+<form method="post" action="<%= url('/p/' + code + '/activar') %>" enctype="multipart/form-data">
+
+  <section class="card card-primary">
+    <h2>PIN de la placa</h2>
+    <div class="field">
+      <label for="pin">PIN de 6 caracteres *</label>
+      <input id="pin" name="pin" required maxlength="8" autocomplete="off"
+             autocapitalize="characters" spellcheck="false" class="pin-input"
+             placeholder="ABC123">
+      <small>
+        Viene impreso en el inserto que acompanaba a la placa. No esta grabado en
+        la placa misma: es lo que impide que otra persona la active antes que tu.
+      </small>
+    </div>
+    <p class="muted small">Placa <strong><%= code %></strong></p>
+  </section>
+
+  <section class="card">
+    <h2>Tus datos de contacto</h2>
+
+    <div class="field">
+      <label for="name">Nombre y apellido *</label>
+      <input id="name" name="name" value="<%= owner.name || '' %>" required maxlength="150" autocomplete="name">
+    </div>
+
+    <div class="field">
+      <label for="phone">Telefono *</label>
+      <input id="phone" name="phone" type="tel" value="<%= owner.phone || '' %>" required
+             maxlength="40" placeholder="+56 9 1234 5678" autocomplete="tel">
+      <small>Es el numero al que van a llamar. Se muestra en la placa.</small>
+    </div>
+
+    <div class="field">
+      <label for="phone_alt">Otro telefono (opcional)</label>
+      <input id="phone_alt" name="phone_alt" type="tel" value="<%= owner.phone_alt || '' %>" maxlength="40">
+    </div>
+
+    <div class="field">
+      <label for="email">Correo *</label>
+      <input id="email" name="email" type="email" value="<%= owner.email || '' %>" required
+             maxlength="190" autocomplete="email">
+      <small>
+        Te vamos a enviar un codigo a este correo para confirmarlo. Aqui te
+        avisamos cuando alguien escanee el QR, asi que revisa que este bien escrito.
+        No se muestra en la placa.
+      </small>
+    </div>
+
+    <div class="field">
+      <label for="address">Direccion (opcional)</label>
+      <input id="address" name="address" value="<%= owner.address || '' %>" maxlength="255"
+             placeholder="Calle y numero">
+      <small>No se muestra en la pagina. Se entrega solo si quien encontro a tu mascota la pide.</small>
+    </div>
+
+    <div class="field">
+      <label for="comuna">Comuna</label>
+      <input id="comuna" name="comuna" value="<%= owner.comuna || '' %>" maxlength="120">
+    </div>
+
+    <div class="field">
+      <label for="city">Ciudad o region</label>
+      <input id="city" name="city" value="<%= owner.city || '' %>" maxlength="120">
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Tu mascota</h2>
+
+    <div class="field">
+      <label for="pet_name">Nombre *</label>
+      <input id="pet_name" name="pet_name" value="<%= pet.name || '' %>" required maxlength="120">
+    </div>
+
+    <div class="field">
+      <label for="pet_species">Especie</label>
+      <select id="pet_species" name="pet_species">
+        <% SPECIES.forEach(function (s) { %>
+          <option value="<%= s %>" <%= pet.species === s ? 'selected' : '' %>><%= s %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="pet_breed">Raza</label>
+      <input id="pet_breed" name="pet_breed" value="<%= pet.breed || '' %>" maxlength="120">
+    </div>
+
+    <div class="field">
+      <label for="pet_color">Color y senas particulares</label>
+      <input id="pet_color" name="pet_color" value="<%= pet.color || '' %>" maxlength="120">
+    </div>
+
+    <div class="field">
+      <label for="pet_sex">Sexo</label>
+      <select id="pet_sex" name="pet_sex">
+        <option value="">Sin especificar</option>
+        <option value="macho" <%= pet.sex === 'macho' ? 'selected' : '' %>>Macho</option>
+        <option value="hembra" <%= pet.sex === 'hembra' ? 'selected' : '' %>>Hembra</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="pet_birth_year">Ano de nacimiento</label>
+      <input id="pet_birth_year" name="pet_birth_year" type="number" min="1990"
+             max="<%= new Date().getFullYear() %>" value="<%= pet.birth_year || '' %>">
+    </div>
+
+    <div class="field">
+      <label for="pet_chip_number">Numero de microchip (si tiene)</label>
+      <input id="pet_chip_number" name="pet_chip_number" value="<%= pet.chip_number || '' %>" maxlength="60">
+    </div>
+
+    <div class="field">
+      <label for="photo">Foto</label>
+      <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" data-resize="1000">
+      <small>Ayuda a confirmar que es tu mascota. JPG o PNG, hasta 4 MB.</small>
+    </div>
+
+    <label class="check">
+      <input type="checkbox" name="pet_sterilized" value="1" <%= pet.sterilized ? 'checked' : '' %>>
+      Esta esterilizado
+    </label>
+
+    <div class="field">
+      <label for="pet_medical_notes">Datos medicos importantes</label>
+      <textarea id="pet_medical_notes" name="pet_medical_notes" rows="3" maxlength="2000"
+                placeholder="Ej: toma medicamento todos los dias, es alergico a..."><%= pet.medical_notes || '' %></textarea>
+      <small>Esto si se muestra en la placa. Escribe solo lo que ayude a cuidarlo.</small>
+    </div>
+
+    <div class="field">
+      <label for="pet_behavior_notes">Como acercarse a el</label>
+      <textarea id="pet_behavior_notes" name="pet_behavior_notes" rows="3" maxlength="2000"
+                placeholder="Ej: es asustadizo, no le des comida, responde a su nombre"><%= pet.behavior_notes || '' %></textarea>
+    </div>
+  </section>
+
+  <section class="card card-consent">
+    <h2>Autorizacion</h2>
+    <p class="consent-text"><%= consent.text %></p>
+    <label class="check">
+      <input type="checkbox" name="consent" value="1" required>
+      <span>Leo y autorizo lo anterior.</span>
+    </label>
+  </section>
+
+  <button class="btn btn-locate" type="submit">Continuar y confirmar mi correo</button>
+</form>
+
+<script src="<%= url('/js/photo.js') %>"></script>
+<%- include('../partials/public-foot') %>

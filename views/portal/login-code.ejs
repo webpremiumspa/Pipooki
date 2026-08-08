@@ -1,0 +1,35 @@
+<%- include('../partials/public-head') %>
+
+<section class="hero">
+  <div class="hero-badge">&#9993; Revisa tu correo</div>
+  <h1 class="pet-name">Ingresa tu codigo</h1>
+  <p class="pet-claim">
+    Si <strong><%= maskedEmail %></strong> tiene una placa registrada, le
+    acabamos de enviar un codigo de 6 digitos.
+  </p>
+</section>
+
+<% if (error) { %>
+  <div class="card card-alert"><p><%= error %></p></div>
+<% } %>
+
+<form method="post" action="<%= url('/mis-datos/codigo') %>">
+  <section class="card card-primary">
+    <div class="field">
+      <label for="code">Codigo de 6 digitos</label>
+      <input id="code" name="code" class="otp-input" inputmode="numeric" pattern="[0-9]*"
+             maxlength="6" required autocomplete="one-time-code" autofocus placeholder="000000">
+    </div>
+    <button class="btn btn-locate" type="submit">Entrar</button>
+  </section>
+</form>
+
+<section class="card">
+  <p class="muted">
+    Revisa la carpeta de correo no deseado si no lo ves. El codigo vence en unos
+    minutos.
+  </p>
+  <a class="btn btn-ghost" href="<%= url('/mis-datos') %>">Usar otro correo</a>
+</section>
+
+<%- include('../partials/public-foot') %>

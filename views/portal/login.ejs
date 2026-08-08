@@ -1,0 +1,31 @@
+<%- include('../partials/public-head') %>
+
+<section class="hero">
+  <div class="hero-badge">&#128062; <%= brand %> Find</div>
+  <h1 class="pet-name">Mis datos</h1>
+  <p class="pet-claim">
+    Te enviamos un codigo al correo con el que registraste tu placa. No hay
+    claves que recordar.
+  </p>
+</section>
+
+<% if (expired) { %>
+  <div class="card card-tip"><p>Tu sesion expiro por seguridad. Pide un codigo nuevo.</p></div>
+<% } %>
+
+<% if (error) { %>
+  <div class="card card-alert"><p><%= error %></p></div>
+<% } %>
+
+<form method="post" action="<%= url('/mis-datos') %>">
+  <section class="card card-primary">
+    <div class="field">
+      <label for="email">Tu correo</label>
+      <input id="email" name="email" type="email" value="<%= email %>" required
+             maxlength="190" autocomplete="email" autofocus>
+    </div>
+    <button class="btn btn-locate" type="submit">Enviarme un codigo</button>
+  </section>
+</form>
+
+<%- include('../partials/public-foot') %>
