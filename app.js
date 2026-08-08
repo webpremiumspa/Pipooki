@@ -1,9 +1,15 @@
 'use strict';
 
-require('dotenv').config();
-
 const path = require('path');
 const fs = require('fs');
+
+// Se apunta al .env por ruta absoluta y no por directorio actual: bajo
+// Passenger el proceso no siempre arranca con el cwd en la raiz de la
+// aplicacion, y ahi dotenv no encontraria el archivo y las variables
+// quedarian vacias sin ningun aviso.
+const envPath = path.join(__dirname, '.env');
+const envResult = require('dotenv').config({ path: envPath });
+
 const express = require('express');
 const helmet = require('helmet');
 const session = require('express-session');
@@ -110,8 +116,40 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Resumen de arranque. En cPanel el log es lo unico a lo que se puede recurrir
+// cuando algo no levanta, asi que conviene que diga con que configuracion
+// quedo realmente el proceso. No se imprime ninguna clave.
+function logStartup() {
+  const lines = [
+    `puerto ${config.port} · entorno ${config.env}`,
+    envResult.error
+      ? `.env NO encontrado en ${envPath} (se usan solo variables del sistema)`
+      : `.env cargado desde ${envPath}`,
+    `base "${config.basePath || '/'}" · publico ${config.publicUrl}`,
+    `mysql ${config.db.user}@${config.db.host}:${config.db.port}/${config.db.database}`,
+    `smtp ${config.smtp.host ? config.smtp.host + ' como ' + config.smtp.user : 'SIN CONFIGURAR'}`
+  ];
+  lines.forEach((l) => console.log('[pipooki-find] ' + l));
+
+  if (!config.basePath && config.publicUrl.includes('/')) {
+    console.log('[pipooki-find] aviso: BASE_PATH esta vacio. Si la app va en un subdirectorio, los enlaces van a apuntar a la raiz del dominio.');
+  }
+}
+
+// Se comprueba la base al arrancar. Sin esto, un error de credenciales solo
+// aparece cuando alguien intenta entrar al panel, y confunde el diagnostico.
+async function checkDatabase() {
+  try {
+    await pool.query('SELECT 1');
+    console.log('[pipooki-find] conexion a mysql correcta');
+  } catch (err) {
+    console.error(`[pipooki-find] ERROR de conexion a mysql: ${err.code || ''} ${err.message}`);
+  }
+}
+
 app.listen(config.port, () => {
-  console.log(`[pipooki-find] escuchando en puerto ${config.port} (base "${config.basePath || '/'}")`);
+  logStartup();
+  checkDatabase();
 });
 
 module.exports = app;

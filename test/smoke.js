@@ -361,7 +361,8 @@ const handlers = [
 ];
 
 const fakeDb = {
-  pool: { end: async () => {} },
+  // El pool responde al SELECT 1 con que la app comprueba la base al arrancar.
+  pool: { end: async () => {}, query: async () => [[{ 1: 1 }], []] },
   async query(sql, params = []) {
     const s = sql.replace(/\s+/g, ' ').trim();
     for (const [re, fn] of handlers) {
