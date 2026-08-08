@@ -1,0 +1,14 @@
+# El repositorio se desarrolla en Windows y se despliega en Linux. Se fuerza
+# LF en todo el codigo para que no viajen retornos de carro al servidor.
+* text=auto eol=lf
+
+# node_modules va versionado (ver .gitignore). Se guarda byte a byte, sin
+# normalizar finales de linea: son archivos de terceros y no hay ninguna razon
+# para que git los reescriba.
+node_modules/** -text
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary

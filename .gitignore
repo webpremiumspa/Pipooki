@@ -1,4 +1,6 @@
-node_modules/
+# node_modules SI se versiona a proposito: en cPanel se despliega solo con
+# "Pull or Deploy", sin ejecutar npm en el servidor. Es viable porque ninguna
+# dependencia tiene binarios nativos ni scripts de compilacion.
 .env
 public/uploads/*
 !public/uploads/.gitkeep
