@@ -697,6 +697,15 @@ function check(name, ok, extra) {
   check('funciona sin el prefijo /find (Passenger que ya lo quita)',
     (await req('GET', '/p/zzzzzzzz')).status === 404);
 
+  const token = require(path.join(process.cwd(), 'src', 'diag')).DIAG_TOKEN;
+  const d1 = await req('GET', '/find/_diag/' + token);
+  check('el diagnostico responde con el prefijo', d1.status === 200 && !!d1.body.despliegue, d1.status);
+  const d2 = await req('GET', '/_diag/' + token);
+  check('y tambien sin el prefijo', d2.status === 200, d2.status);
+  check('el diagnostico NO muestra ninguna clave',
+    !JSON.stringify(d2.body).includes(process.env.SESSION_SECRET));
+  check('informa el basePath efectivo', d2.body.configuracionEfectiva.basePath === '/find');
+
   console.log(`\n${pass} pruebas OK, ${fail} fallas`);
   process.exit(fail ? 1 : 0);
 })().catch((err) => { console.error('ERROR EN EL ARNES:', err); process.exit(1); });

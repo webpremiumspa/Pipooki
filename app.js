@@ -12,11 +12,16 @@ const MySQLStore = require('express-mysql-session')(session);
 
 const config = require('./src/config');
 const { pool } = require('./src/db');
+const diag = require('./src/diag');
 const publicRoutes = require('./src/routes/public');
 const portalRoutes = require('./src/routes/portal');
 const adminRoutes = require('./src/routes/admin');
 
 const app = express();
+
+// Diagnostico del despliegue. Va primero, antes incluso de normalizar el
+// BASE_PATH, para que responda aunque la aplicacion este mal montada.
+app.use(diag.middleware(config, pool));
 
 // Passenger (cPanel) puede entregar la ruta con o sin el prefijo del
 // "Application URL". Normalizamos para que las rutas internas se definan
@@ -146,6 +151,7 @@ async function checkDatabase() {
 
 app.listen(config.port, () => {
   logStartup();
+  console.log(`[pipooki-find] diagnostico en ${config.publicUrl}${config.basePath}/_diag/${diag.DIAG_TOKEN}`);
   checkDatabase();
 });
 
