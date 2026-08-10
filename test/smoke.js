@@ -552,6 +552,8 @@ function check(name, ok, extra) {
   check('LA DIRECCION NO VIAJA EN EL HTML', !page.body.includes('Los Olmos'));
   check('el correo del dueno no viaja en el HTML', !page.body.includes('maria@ejemplo.cl'));
   check('link de WhatsApp normalizado', page.body.includes('wa.me/56987654321'));
+  check('ofrece al dueno la via para editar sus datos',
+    page.body.includes('/find/mis-datos') && page.body.includes('Eres el dueno'));
 
   const scan = await req('POST', '/find/p/' + tag.code + '/scan', { json: {} });
   check('registra el escaneo', scan.status === 200 && !!scan.body.scanId);

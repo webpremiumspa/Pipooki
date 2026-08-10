@@ -114,5 +114,15 @@
   </section>
 <% } %>
 
+<%
+  // Discreto y al final: esta pagina es para quien encontro la mascota, no
+  // para el dueno. Pero lo primero que hace el dueno cuando quiere corregir
+  // algo es escanear su propia placa, y sin esto no tiene por donde entrar.
+%>
+<p class="owner-link">
+  Eres el dueno de <%= tag.pet_name %>?
+  <a href="<%= url('/mis-datos') %>">Edita tus datos</a>
+</p>
+
 <script src="<%= url('/js/pet.js') %>"></script>
 <%- include('../partials/public-foot') %>

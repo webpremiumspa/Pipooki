@@ -284,6 +284,16 @@ body {
 .pet-item-actions { display: flex; gap: 8px; align-items: center; }
 .pet-item-actions .btn { width: auto; padding: 9px 14px; font-size: 15px; margin: 0; }
 
+/* Enlace para el dueno al pie de la pagina publica. Deliberadamente discreto:
+   no debe competir con los botones de contacto, que son lo urgente. */
+.owner-link {
+  margin: 18px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+}
+.owner-link a { color: var(--teal-dark); }
+
 .foot {
   margin-top: 24px;
   text-align: center;
