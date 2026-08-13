@@ -488,11 +488,17 @@ function check(name, ok, extra) {
   check('un codigo inexistente responde 404', (await req('GET', '/find/p/zzzzzzzz')).status === 404);
 
   console.log('\n[3] El PIN protege la activacion');
+  // PNG de 1x1. Va como texto en el cuerpo del formulario, no como adjunto:
+  // el WAF del hosting responde 403 a las subidas multipart de anonimos.
+  const PNG_1X1 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ' +
+    'AAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+
   const datos = {
     name: 'Maria Perez', phone: '+56 9 8765 4321', email: 'maria@ejemplo.cl',
     address: 'Los Olmos 123', comuna: 'Nunoa', city: 'Santiago',
     pet_name: 'Rocky', pet_species: 'perro', pet_breed: 'Quiltro',
-    pet_medical_notes: 'Toma medicamento diario.', consent: '1'
+    pet_medical_notes: 'Toma medicamento diario.', consent: '1',
+    photo_data: PNG_1X1
   };
 
   const badPin = await req('POST', '/find/p/' + tag.code + '/activar', { form: { ...datos, pin: 'XXXXXX' } });
@@ -532,6 +538,14 @@ function check(name, ok, extra) {
   check('se creo el dueno con el correo verificado',
     T.owners.length === 1 && Boolean(T.owners[0].email_verified_at));
   check('se creo la mascota', T.pets.length === 1 && T.pets[0].name === 'Rocky');
+  check('LA FOTO SE GUARDA SIN SUBIDA DE ARCHIVOS',
+    Boolean(T.pets[0].photo) && require('fs').existsSync(
+      path.join(process.cwd(), 'public', 'uploads', T.pets[0].photo)), T.pets[0].photo);
+
+  const badPhoto = await req('POST', '/find/p/' + T.tags[2].code + '/activar', {
+    form: { ...datos, pin: T.tags[2].pin, photo_data: 'data:text/html;base64,PHNjcmlwdD4=' }
+  });
+  check('rechaza un archivo que no es imagen', badPhoto.status === 400, badPhoto.status);
   check('la placa quedo activa y enlazada',
     T.tags[0].status === 'activa' && T.tags[0].pet_id === T.pets[0].id);
   check('el registro pendiente se limpio', T.claims.length === 0);

@@ -61,8 +61,11 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
 
-app.use(express.urlencoded({ extended: false, limit: '1mb' }));
-app.use(express.json({ limit: '1mb' }));
+// El limite del formulario es holgado porque la foto viaja como texto en
+// base64 dentro del propio cuerpo (ver src/middleware/photo-field.js). El JSON
+// se deja chico: solo lo usan los endpoints de escaneo y ubicacion.
+app.use(express.urlencoded({ extended: false, limit: '8mb' }));
+app.use(express.json({ limit: '256kb' }));
 
 fs.mkdirSync(config.uploadDir, { recursive: true });
 app.use(express.static(path.join(config.rootDir, 'public'), { maxAge: '7d' }));

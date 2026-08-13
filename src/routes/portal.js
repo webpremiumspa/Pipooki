@@ -21,7 +21,7 @@ const {
   readPetCommon, readOwnerCommon, validateOwnerCommon
 } = require('../services/forms');
 const { rateLimit } = require('../middleware/rateLimit');
-const { uploadPhoto, removePhoto } = require('../middleware/upload');
+const { photoField, removePhoto } = require('../middleware/photo-field');
 
 const router = express.Router();
 
@@ -96,7 +96,7 @@ router.get('/p/:code/activar', formLimiter, async (req, res, next) => {
   }
 });
 
-router.post('/p/:code/activar', submitLimiter, uploadPhoto, async (req, res, next) => {
+router.post('/p/:code/activar', submitLimiter, photoField, async (req, res, next) => {
   try {
     await sweepClaims();
     const code = String(req.params.code || '').toLowerCase();
@@ -526,7 +526,7 @@ router.get('/mis-datos/mascota/:petId', formLimiter, requireOwner, async (req, r
   }
 });
 
-router.post('/mis-datos/mascota/:petId', submitLimiter, requireOwner, uploadPhoto, async (req, res, next) => {
+router.post('/mis-datos/mascota/:petId', submitLimiter, requireOwner, photoField, async (req, res, next) => {
   try {
     const current = await loadOwnPet(req.owner.id, req.params.petId);
     if (!current) {

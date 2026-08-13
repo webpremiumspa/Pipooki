@@ -23,7 +23,7 @@
   </div>
 <% } %>
 
-<form method="post" action="<%= url('/p/' + code + '/activar') %>" enctype="multipart/form-data">
+<form method="post" action="<%= url('/p/' + code + '/activar') %>">
 
   <section class="card card-primary">
     <h2>PIN de la placa</h2>
@@ -138,7 +138,9 @@
 
     <div class="field">
       <label for="photo">Foto</label>
-      <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" data-resize="1000">
+      <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" data-resize="1000">
+      <input type="hidden" id="photo_data" name="photo_data">
+      <p class="muted small" id="photoStatus" role="status" aria-live="polite"></p>
       <small>Ayuda a confirmar que es tu mascota. JPG o PNG, hasta 4 MB.</small>
     </div>
 

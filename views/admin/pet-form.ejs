@@ -16,7 +16,7 @@
   </div>
 <% } %>
 
-<form class="panel form" method="post" enctype="multipart/form-data"
+<form class="panel form" method="post"
       action="<%= url('/admin/mascotas/' + pet.id + '/editar') %>">
   <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
@@ -66,7 +66,9 @@
 
   <div class="field">
     <label for="photo">Foto</label>
-    <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" data-resize="1000">
+    <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" data-resize="1000">
+      <input type="hidden" id="photo_data" name="photo_data">
+      <p class="muted small" id="photoStatus" role="status" aria-live="polite"></p>
     <small>JPG, PNG o WEBP, hasta 4 MB. Se reduce automaticamente antes de subirla.</small>
     <% if (pet.photo) { %>
       <div class="photo-current">

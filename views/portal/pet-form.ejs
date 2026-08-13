@@ -12,7 +12,7 @@
   </div>
 <% } %>
 
-<form method="post" enctype="multipart/form-data" action="<%= url('/mis-datos/mascota/' + pet.id) %>">
+<form method="post" action="<%= url('/mis-datos/mascota/' + pet.id) %>">
   <section class="card">
     <div class="field">
       <label for="name">Nombre *</label>
@@ -60,7 +60,9 @@
 
     <div class="field">
       <label for="photo">Foto</label>
-      <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" data-resize="1000">
+      <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" data-resize="1000">
+      <input type="hidden" id="photo_data" name="photo_data">
+      <p class="muted small" id="photoStatus" role="status" aria-live="polite"></p>
       <% if (pet.photo) { %>
         <div class="photo-current">
           <img src="<%= url('/uploads/' + pet.photo) %>" alt="Foto actual">

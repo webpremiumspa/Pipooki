@@ -16,7 +16,7 @@ const {
 const { requireAdmin } = require('../middleware/auth');
 const { csrf } = require('../middleware/csrf');
 const { rateLimit } = require('../middleware/rateLimit');
-const { uploadPhoto, removePhoto } = require('../middleware/upload');
+const { photoField, removePhoto } = require('../middleware/photo-field');
 
 const router = express.Router();
 
@@ -29,10 +29,8 @@ router.use((req, res, next) => {
   next();
 });
 
-// multer debe correr ANTES que el CSRF: en un envio multipart el campo _csrf
-// viaja dentro del cuerpo y sin parsear no existe req.body. Con peticiones que
-// no son multipart, multer simplemente deja pasar.
-router.use(uploadPhoto);
+// Guarda la foto que venga en el cuerpo del formulario y la deja en req.file.
+router.use(photoField);
 router.use(csrf);
 
 // -------------------------------- Login -----------------------------------
